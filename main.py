@@ -2,6 +2,8 @@ import logging
 import asyncio
 import dotenv
 import os
+from flask import Flask
+from threading import Thread
 from aiogram import Bot, Dispatcher, F, Router
 from aiogram.filters import Command
 from aiogram.types import (
@@ -13,6 +15,7 @@ from aiogram.types import (
     KeyboardButton
 )
 
+app = Flask(__name__)
 
 dotenv.load_dotenv()
 # ================== НАСТРОЙКИ ==================
@@ -31,6 +34,17 @@ TEXTS = {
 }
 
 # ================================================
+
+
+
+
+@app.route("/")
+def home():
+    return "Bot is running!"
+
+def run_flask():
+    port = int(os.getenv("PORT", 5000))  # Render всегда задаёт PORT
+    app.run(host="0.0.0.0", port=port)
 
 # Данные заявок
 pending_approvals = {}
@@ -159,4 +173,7 @@ async def main():
     await dp.start_polling(bot)
 
 if __name__ == "__main__":
+
+    Thread(target=run_flask).start()
+    
     asyncio.run(main())
